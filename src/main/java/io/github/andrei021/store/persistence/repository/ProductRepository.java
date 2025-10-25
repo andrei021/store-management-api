@@ -39,7 +39,6 @@ public class ProductRepository {
             logger.info("Found product with id=[{}] and name=[{}]", product.getId(), product.getName());
             return Optional.ofNullable(product);
         } catch (EmptyResultDataAccessException e) {
-            logger.warn("No product found having the id=[{}]", id);
             return Optional.empty();
         }
     }

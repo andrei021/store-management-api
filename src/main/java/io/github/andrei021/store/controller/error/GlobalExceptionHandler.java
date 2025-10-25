@@ -38,10 +38,10 @@ public class GlobalExceptionHandler {
             Object invalidValue = violation.getInvalidValue();
             String message = violation.getMessage();
 
-            logger.warn("{} in endpoint [{}], but got [{}]", message, endpoint, invalidValue);
+            logger.warn("{} when calling the endpoint [{}], but got [{}]", message, endpoint, invalidValue);
 
-            if (clientMessage.length() > 0) {
-                clientMessage.append("; ");
+            if (!clientMessage.isEmpty()) {
+                clientMessage.append(System.lineSeparator());
             }
             clientMessage.append(message).append(", but got ").append(invalidValue);
         });
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         String expectedType = exception.getRequiredType() != null ? exception.getRequiredType().getSimpleName() : "unknown";
         String endpoint = extractEndpoint(request);
 
-        logger.warn("Invalid parameter type for [{}] in endpoint [{}]: expected [{}], but got [{}]",
+        logger.warn("Invalid parameter type for [{}] when calling the endpoint [{}]: expected [{}], but got [{}]",
                 paramName, endpoint, expectedType, invalidValue);
 
         String message = String.format("Invalid parameter [%s]: expected [%s], but got [%s]",
