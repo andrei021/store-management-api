@@ -22,4 +22,12 @@ public class ProductService {
                         String.format("Product not found with id=[%d]", id)
                 ));
     }
+
+    @Transactional(readOnly = true)
+    public ProductDto findByName(String name) {
+        return productRepository.findByName(name)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        String.format("Product not found with name=[%s]", name)
+                ));
+    }
 }

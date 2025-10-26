@@ -8,6 +8,7 @@ public final class ProductTableConstants {
     // Product Table Columns
     public static final String PRODUCT_ID_COLUMN = "id";
     public static final String PRODUCT_NAME_COLUMN = "name";
+    public static final String PRODUCT_NAME_NORMALIZED_COLUMN = "name_normalized";
     public static final String PRODUCT_PRICE_COLUMN = "price";
     public static final String PRODUCT_STOCK_COLUMN = "stock";
 

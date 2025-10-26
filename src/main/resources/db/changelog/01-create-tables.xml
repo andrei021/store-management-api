@@ -11,6 +11,9 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="name_normalized" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="price" type="DECIMAL(10,2)">
                 <constraints nullable="false"/>
             </column>
@@ -19,8 +22,8 @@
             </column>
         </createTable>
 
-        <createIndex indexName="idx_product_name" tableName="product">
-            <column name="name"/>
+        <createIndex indexName="idx_product_name_normalized" tableName="product">
+            <column name="name_normalized"/>
         </createIndex>
     </changeSet>
 

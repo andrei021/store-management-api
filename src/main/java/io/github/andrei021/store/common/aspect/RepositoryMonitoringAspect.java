@@ -1,18 +1,16 @@
 package io.github.andrei021.store.common.aspect;
 
-import jakarta.annotation.PostConstruct;
+import io.github.andrei021.store.common.property.LoggingProperties;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Aspect
 @Component
@@ -20,15 +18,10 @@ public class RepositoryMonitoringAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(RepositoryMonitoringAspect.class);
 
-    @Value("${app.logging.preview-limit}")
-    private Integer previewLimit;
-    private int defaultPreviewLimit = 5;
+    private final LoggingProperties loggingProperties;
 
-    @PostConstruct
-    public void postConstruct() {
-        if (previewLimit == null) {
-            previewLimit = defaultPreviewLimit;
-        }
+    public RepositoryMonitoringAspect(LoggingProperties loggingProperties) {
+        this.loggingProperties = loggingProperties;
     }
 
     @Around("execution(public * io.github.andrei021.store.persistence..*Repository.*(..))")
@@ -44,7 +37,7 @@ public class RepositoryMonitoringAspect {
 
         if (result instanceof Collection<?> collection) {
             resultInfo = "Collection size=[" + collection.size() + "], preview=[" +
-                    collection.stream().limit(previewLimit)
+                    collection.stream().limit(loggingProperties.previewLimit())
                             .map(Object::toString)
                             .toList() + "]";
         } else if (result instanceof Optional<?> optional) {

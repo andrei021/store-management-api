@@ -1,11 +1,11 @@
 package io.github.andrei021.store.controller.error;
 
-import io.github.andrei021.store.common.exception.ProductNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -15,19 +15,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFound(ProductNotFoundException exception) {
-        logger.warn("Product not found: {}", exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUnknown(Exception exception) {
-        logger.error("Unexpected error occurred", exception);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred. Please try again later");
-    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
@@ -43,7 +30,9 @@ public class GlobalExceptionHandler {
             if (!clientMessage.isEmpty()) {
                 clientMessage.append(System.lineSeparator());
             }
-            clientMessage.append(message).append(", but got ").append(invalidValue);
+
+            String actualValueMessage = String.format(", but got [%s]", invalidValue);
+            clientMessage.append(message).append(actualValueMessage);
         });
 
         return ResponseEntity.badRequest().body(clientMessage.toString());
@@ -64,6 +53,25 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(message);
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<String> handleMissingQueryParams(MissingServletRequestParameterException exception, WebRequest request) {
+        String paramName = exception.getParameterName();
+        String endpoint = extractEndpoint(request);
+        String message = String.format("Missing required parameter [%s]. Please check API documentation", paramName);
+
+        logger.warn("Required parameter [{}] is missing for endpoint [{}]", paramName, endpoint);
+
+        return ResponseEntity.badRequest().body(message);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUnknown(Exception exception) {
+        logger.error("Unexpected error occurred", exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An unexpected error occurred. Please try again later");
+    }
+
 
     private String extractEndpoint(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
