@@ -1,4 +1,4 @@
-package io.github.andrei021.store.common.config;
+package io.github.andrei021.store.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;

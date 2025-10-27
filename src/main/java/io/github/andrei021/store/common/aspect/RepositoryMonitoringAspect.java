@@ -1,11 +1,10 @@
 package io.github.andrei021.store.common.aspect;
 
 import io.github.andrei021.store.common.property.LoggingProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -14,9 +13,8 @@ import java.util.Optional;
 
 @Aspect
 @Component
+@Slf4j
 public class RepositoryMonitoringAspect {
-
-    private static final Logger logger = LoggerFactory.getLogger(RepositoryMonitoringAspect.class);
 
     private final LoggingProperties loggingProperties;
 
@@ -29,7 +27,7 @@ public class RepositoryMonitoringAspect {
         long start = System.currentTimeMillis();
 
         Object[] args = joinPoint.getArgs();
-        logger.debug("Entering [{}] with args={}", joinPoint.getSignature(), Arrays.toString(args));
+        log.debug("Entering [{}] with args={}", joinPoint.getSignature(), Arrays.toString(args));
 
         Object result = joinPoint.proceed();
         long duration = System.currentTimeMillis() - start;
@@ -46,7 +44,7 @@ public class RepositoryMonitoringAspect {
             resultInfo = result.toString();
         }
 
-        logger.info("Executed [{}] in [{}] ms, result=[{}]", joinPoint.getSignature(), duration, resultInfo);
+        log.info("Executed [{}] in [{}] ms, result=[{}]", joinPoint.getSignature(), duration, resultInfo);
         return result;
     }
 }

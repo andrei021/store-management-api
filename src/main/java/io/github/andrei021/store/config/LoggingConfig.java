@@ -1,4 +1,4 @@
-package io.github.andrei021.store.common.config;
+package io.github.andrei021.store.config;
 
 import io.github.andrei021.store.common.property.LoggingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

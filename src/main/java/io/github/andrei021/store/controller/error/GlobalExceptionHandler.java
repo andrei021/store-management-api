@@ -1,79 +1,105 @@
 package io.github.andrei021.store.controller.error;
 
+import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.Instant;
+
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleConstraintViolation(ConstraintViolationException exception, ServletWebRequest request) {
         StringBuilder clientMessage = new StringBuilder();
-        String endpoint = extractEndpoint(request);
+        String requestUri = request.getRequest().getRequestURI();
 
         exception.getConstraintViolations().forEach(violation -> {
             Object invalidValue = violation.getInvalidValue();
             String message = violation.getMessage();
 
-            logger.warn("{} when calling the endpoint [{}], but got [{}]", message, endpoint, invalidValue);
+            log.warn("{} when calling the endpoint [{}], but got [{}]", message, requestUri, invalidValue);
 
             if (!clientMessage.isEmpty()) {
                 clientMessage.append(System.lineSeparator());
             }
 
-            String actualValueMessage = String.format(", but got [%s]", invalidValue);
+            String actualValueMessage = String.format(", but got the value [%s]", invalidValue);
             clientMessage.append(message).append(actualValueMessage);
         });
 
-        return ResponseEntity.badRequest().body(clientMessage.toString());
+        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(clientMessage.toString())
+                .path(requestUri)
+                .build()
+        );
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleTypeMismatch(MethodArgumentTypeMismatchException exception, ServletWebRequest request) {
         String paramName = exception.getName();
         Object invalidValue = exception.getValue();
         String expectedType = exception.getRequiredType() != null ? exception.getRequiredType().getSimpleName() : "unknown";
-        String endpoint = extractEndpoint(request);
+        String requestUri = request.getRequest().getRequestURI();
 
-        logger.warn("Invalid parameter type for [{}] when calling the endpoint [{}]: expected [{}], but got [{}]",
-                paramName, endpoint, expectedType, invalidValue);
+        String message = String.format(
+                "Invalid parameter type for [%s] when " +
+                        "calling the endpoint [%s]: expected [%s], " +
+                        "but got the value [%s]",
+                paramName, requestUri, expectedType, invalidValue
+        );
 
-        String message = String.format("Invalid parameter [%s]: expected [%s], but got [%s]",
-                paramName, expectedType, invalidValue);
-
-        return ResponseEntity.badRequest().body(message);
+        log.warn(message);
+        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(message)
+                .path(requestUri)
+                .build()
+        );
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingQueryParams(MissingServletRequestParameterException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleMissingQueryParams(MissingServletRequestParameterException exception, ServletWebRequest request) {
         String paramName = exception.getParameterName();
-        String endpoint = extractEndpoint(request);
-        String message = String.format("Missing required parameter [%s]. Please check API documentation", paramName);
+        String requestUri = request.getRequest().getRequestURI();
+        String message = String.format("Missing required parameter [%s]. Please check the API documentation", paramName);
 
-        logger.warn("Required parameter [{}] is missing for endpoint [{}]", paramName, endpoint);
+        log.warn("Required parameter [{}] is missing for endpoint [{}]", paramName, requestUri);
 
-        return ResponseEntity.badRequest().body(message);
+        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(message)
+                .path(requestUri)
+                .build()
+        );
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUnknown(Exception exception) {
-        logger.error("Unexpected error occurred", exception);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred. Please try again later");
-    }
+    public ResponseEntity<ErrorResponseDto> handleUnknown(Exception exception, ServletWebRequest request) {
+        log.error("Unexpected error occurred", exception);
 
-
-    private String extractEndpoint(WebRequest request) {
-        return request.getDescription(false).replace("uri=", "");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponseDto.builder()
+                        .timestamp(Instant.now())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                        .message("An unexpected error occurred. Please try again later")
+                        .path(request.getRequest().getRequestURI())
+                        .build()
+        );
     }
 }

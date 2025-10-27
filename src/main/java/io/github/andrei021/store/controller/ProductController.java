@@ -1,6 +1,6 @@
 package io.github.andrei021.store.controller;
 
-import io.github.andrei021.store.persistence.model.ProductDto;
+import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.service.ProductService;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -29,11 +29,11 @@ public class ProductController {
      * Find a product by ID. Returns 404 if not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> findById(
+    public ResponseEntity<ProductResponseDto> findById(
             @Positive(message = "Product id must be positive")
             @PathVariable("id") long id) {
 
-        ProductDto product = productService.findById(id);
+        ProductResponseDto product = productService.findById(id);
         return ResponseEntity.ok(product);
     }
 
@@ -42,7 +42,7 @@ public class ProductController {
      * Find a product by name. Returns 404 if not found
      */
     @GetMapping
-    public ResponseEntity<ProductDto> findByName(
+    public ResponseEntity<ProductResponseDto> findByName(
             @RequestParam("name")
             @Size(max = 255, message = "Product name must be at most 255 characters")
             @Pattern(
@@ -51,7 +51,7 @@ public class ProductController {
             )
             String name) {
 
-        ProductDto product = productService.findByName(name);
+        ProductResponseDto product = productService.findByName(name);
         return ResponseEntity.ok(product);
     }
 }
