@@ -1,13 +1,23 @@
 package io.github.andrei021.store.service;
 
+import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
+import io.github.andrei021.store.common.exception.InvalidOffsetException;
 import io.github.andrei021.store.common.exception.ProductNotFoundException;
 import io.github.andrei021.store.persistence.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
+
+    private static final int DEFAULT_PAGINATION_LIMIT = 10;
+    private static final int MAX_PAGINATION_LIMIT = 50;
+    private static final int MIN_PAGINATION_OFFSET = 0;
 
     private final ProductRepository productRepository;
 
@@ -29,5 +39,56 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(
                         String.format("Product not found with name=[%s]", name)
                 ));
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit, String baseUrl) {
+        validateOffset(offset);
+        limit = checkAndGetLimit(limit);
+
+        List<ProductResponseDto> products = productRepository.getPaginatedProducts(offset, limit);
+
+        boolean hasNext = products.size() == limit;
+        boolean hasPrevious = offset > 0;
+
+        int nextOffset = offset + limit;
+        int prevOffset = Math.max(offset - limit, 0);
+
+        return new PaginatedResponseDto<>(
+                products,
+                offset,
+                limit,
+                hasNext ? baseUrl + "?offset=" + nextOffset + "&limit=" + limit : null,
+                hasPrevious ? baseUrl + "?offset=" + prevOffset + "&limit=" + limit : null,
+                hasNext,
+                hasPrevious
+        );
+    }
+
+    private void validateOffset(int offset) {
+        if (offset < MIN_PAGINATION_OFFSET) {
+            throw new InvalidOffsetException(offset);
+        }
+    }
+
+    private int checkAndGetLimit(int limit) {
+        boolean hasChanged = false;
+
+        if (limit <= 0) {
+            log.warn("Invalid limit [{}]. Resetting to default {}", limit, DEFAULT_PAGINATION_LIMIT);
+            limit = DEFAULT_PAGINATION_LIMIT;
+            hasChanged = true;
+        } else if (limit > MAX_PAGINATION_LIMIT) {
+            log.warn("Limit [{}] exceeds max allowed [{}]. Resetting to {}", limit,
+                    MAX_PAGINATION_LIMIT, MAX_PAGINATION_LIMIT);
+            limit = MAX_PAGINATION_LIMIT;
+            hasChanged = true;
+        }
+
+        if (hasChanged) {
+            log.info("Using adjusted limit [{}] after validation", limit);
+        }
+
+        return limit;
     }
 }

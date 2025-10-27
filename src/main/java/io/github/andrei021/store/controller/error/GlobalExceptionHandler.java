@@ -11,14 +11,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.Instant;
+import static io.github.andrei021.store.controller.ControllerUtil.buildErrorResponse;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponseDto> handleConstraintViolation(ConstraintViolationException exception, ServletWebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleConstraintViolation(
+            ConstraintViolationException exception,
+            ServletWebRequest request
+    ) {
         StringBuilder clientMessage = new StringBuilder();
         String requestUri = request.getRequest().getRequestURI();
 
@@ -29,29 +32,26 @@ public class GlobalExceptionHandler {
             log.warn("{} when calling the endpoint [{}], but got [{}]", message, requestUri, invalidValue);
 
             if (!clientMessage.isEmpty()) {
-                clientMessage.append(System.lineSeparator());
+                clientMessage.append(";");
             }
 
             String actualValueMessage = String.format(", but got the value [%s]", invalidValue);
             clientMessage.append(message).append(actualValueMessage);
         });
 
-        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
-                .timestamp(Instant.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(clientMessage.toString())
-                .path(requestUri)
-                .build()
-        );
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, clientMessage.toString(), request);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponseDto> handleTypeMismatch(MethodArgumentTypeMismatchException exception, ServletWebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleTypeMismatch(
+            MethodArgumentTypeMismatchException exception,
+            ServletWebRequest request
+    ) {
+        String requestUri = request.getRequest().getRequestURI();
         String paramName = exception.getName();
         Object invalidValue = exception.getValue();
-        String expectedType = exception.getRequiredType() != null ? exception.getRequiredType().getSimpleName() : "unknown";
-        String requestUri = request.getRequest().getRequestURI();
+        String expectedType = exception.getRequiredType() != null ?
+                exception.getRequiredType().getSimpleName() : "unknown";
 
         String message = String.format(
                 "Invalid parameter type for [%s] when " +
@@ -61,45 +61,30 @@ public class GlobalExceptionHandler {
         );
 
         log.warn(message);
-        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
-                .timestamp(Instant.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(message)
-                .path(requestUri)
-                .build()
-        );
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponseDto> handleMissingQueryParams(MissingServletRequestParameterException exception, ServletWebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleMissingQueryParams(
+            MissingServletRequestParameterException exception,
+            ServletWebRequest request
+    ) {
         String paramName = exception.getParameterName();
         String requestUri = request.getRequest().getRequestURI();
-        String message = String.format("Missing required parameter [%s]. Please check the API documentation", paramName);
+        String message = String.format("Missing required parameter [%s]. " +
+                "Please check the API documentation", paramName);
 
         log.warn("Required parameter [{}] is missing for endpoint [{}]", paramName, requestUri);
-
-        return ResponseEntity.badRequest().body(ErrorResponseDto.builder()
-                .timestamp(Instant.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(message)
-                .path(requestUri)
-                .build()
-        );
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleUnknown(Exception exception, ServletWebRequest request) {
+    public ResponseEntity<ErrorResponseDto> handleUnknown(
+            Exception exception,
+            ServletWebRequest request
+    ) {
         log.error("Unexpected error occurred", exception);
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponseDto.builder()
-                        .timestamp(Instant.now())
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                        .message("An unexpected error occurred. Please try again later")
-                        .path(request.getRequest().getRequestURI())
-                        .build()
-        );
+        String message = "An unexpected error occurred. Please try again later";
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, request);
     }
 }

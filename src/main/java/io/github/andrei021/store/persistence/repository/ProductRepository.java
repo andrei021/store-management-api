@@ -2,6 +2,7 @@ package io.github.andrei021.store.persistence.repository;
 
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository {
@@ -9,4 +10,6 @@ public interface ProductRepository {
     Optional<ProductResponseDto> findById(long id);
 
     Optional<ProductResponseDto> findByName(String name);
+
+    List<ProductResponseDto> getPaginatedProducts(int offset, int limit);
 }
