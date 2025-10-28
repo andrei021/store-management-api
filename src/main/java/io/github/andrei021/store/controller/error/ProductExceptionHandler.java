@@ -1,6 +1,7 @@
 package io.github.andrei021.store.controller.error;
 
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
+import io.github.andrei021.store.common.exception.InsufficientStockException;
 import io.github.andrei021.store.common.exception.InvalidOffsetException;
 import io.github.andrei021.store.common.exception.ProductAlreadyExistsException;
 import io.github.andrei021.store.common.exception.ProductNotFoundException;
@@ -46,6 +47,16 @@ public class ProductExceptionHandler {
     ) {
         String exceptionMessage = exception.getMessage();
         log.warn("Product already exists: {}", exceptionMessage, exception);
+        return buildErrorResponse(HttpStatus.CONFLICT, exceptionMessage, request);
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponseDto> handleInsufficientStock(
+            InsufficientStockException exception,
+            ServletWebRequest request
+    ) {
+        String exceptionMessage = exception.getMessage();
+        log.warn("Insufficient stock: {}", exceptionMessage);
         return buildErrorResponse(HttpStatus.CONFLICT, exceptionMessage, request);
     }
 }

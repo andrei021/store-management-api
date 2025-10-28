@@ -12,7 +12,7 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="name_normalized" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="price" type="DECIMAL(10,2)">
                 <constraints nullable="false"/>

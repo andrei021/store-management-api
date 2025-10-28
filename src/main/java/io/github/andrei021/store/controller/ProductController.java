@@ -1,6 +1,7 @@
 package io.github.andrei021.store.controller;
 
 import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
+import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.service.ProductService;
@@ -96,10 +97,22 @@ public class ProductController {
      * Add a new product
      */
     @PostMapping
-    public ResponseEntity<ProductResponseDto> addProduct(
+    public ResponseEntity<ProductResponseDto> createProduct(
             @Valid @RequestBody AddProductRequestDto request
     ) {
-        ProductResponseDto createdProduct = productService.addProduct(request);
+        ProductResponseDto createdProduct = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+    }
+
+    /**
+     * POST /api/products/buy
+     * Buy 1 unit of a product by ID. Throws 404 if not found or 409 if out of stock
+     */
+    @PostMapping("/buy")
+    public ResponseEntity<ProductResponseDto> buyProduct(
+            @Valid @RequestBody BuyProductRequestDto request
+    ) {
+        ProductResponseDto boughtProduct = productService.buyProduct(request);
+        return ResponseEntity.ok(boughtProduct);
     }
 }

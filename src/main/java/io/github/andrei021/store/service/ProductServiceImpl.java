@@ -1,8 +1,10 @@
 package io.github.andrei021.store.service;
 
 import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
+import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
+import io.github.andrei021.store.common.exception.InsufficientStockException;
 import io.github.andrei021.store.common.exception.InvalidOffsetException;
 import io.github.andrei021.store.common.exception.ProductAlreadyExistsException;
 import io.github.andrei021.store.common.exception.ProductNotFoundException;
@@ -10,6 +12,7 @@ import io.github.andrei021.store.persistence.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,20 +25,24 @@ public class ProductServiceImpl implements ProductService {
     private static final int MAX_PAGINATION_LIMIT = 50;
     private static final int MIN_PAGINATION_OFFSET = 0;
 
+    private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id=[%d]";
+
     private final ProductRepository productRepository;
 
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public ProductResponseDto findById(long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product not found with id=[%d]", id)
+                        String.format(PRODUCT_NOT_FOUND_MESSAGE, id)
                 ));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public ProductResponseDto findByName(String name) {
         return productRepository.findByName(name)
@@ -44,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
                 ));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit, String baseUrl) {
         validateOffset(offset);
@@ -68,14 +76,38 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
+    @Override
     @Transactional
-    public ProductResponseDto addProduct(AddProductRequestDto request) {
+    public ProductResponseDto createProduct(AddProductRequestDto request) {
         try {
-            return productRepository.addProduct(request);
+            return productRepository.createProduct(request.name(), request.price(), request.stock());
         } catch (DataIntegrityViolationException exception) {
             String message = String.format("Product with name=[%s] already exists", request.name());
             throw new ProductAlreadyExistsException(message, exception);
         }
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProductResponseDto buyProduct(BuyProductRequestDto request) {
+        long id = request.id();
+        boolean updated = productRepository.buyProduct(id);
+
+        if (!updated) {
+            productRepository.findById(id)
+                    .orElseThrow(() -> new ProductNotFoundException(
+                            String.format(PRODUCT_NOT_FOUND_MESSAGE, id)
+                    ));
+
+            throw new InsufficientStockException(
+                    String.format("Product with id=[%d] is out of stock", id)
+            );
+        }
+
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        String.format("Product not found with id=[%d] after buy action", id)
+                ));
     }
 
     private void validateOffset(int offset) {

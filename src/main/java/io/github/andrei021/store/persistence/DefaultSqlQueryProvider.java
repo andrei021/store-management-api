@@ -32,4 +32,11 @@ public final class DefaultSqlQueryProvider {
                     PRODUCT_STOCK_COLUMN +
                     ") VALUES (:" + PRODUCT_NAME_COLUMN + ", :" + PRODUCT_NAME_NORMALIZED_COLUMN +
                     ", :" + PRODUCT_PRICE_COLUMN + ", :" + PRODUCT_STOCK_COLUMN + ")";
+
+    // Could not use 'RETURNING*' in H2 order to get the entry after it was updated
+    // I need to query multiple times
+    public static final String BUY_PRODUCT_QUERY =
+            "UPDATE " + PRODUCT_TABLE_NAME +
+                    " SET " + PRODUCT_STOCK_COLUMN + " = " + PRODUCT_STOCK_COLUMN + " - 1" +
+                    " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN + " AND " + PRODUCT_STOCK_COLUMN + " > 0";
 }
