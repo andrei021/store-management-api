@@ -3,6 +3,7 @@ package io.github.andrei021.store.controller;
 import io.github.andrei021.store.common.dto.request.ChangePriceRequestDto;
 import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
+import io.github.andrei021.store.common.dto.response.ApiResponse;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.service.ProductService;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 
+import java.time.Instant;
+
 @RestController
 @RequestMapping("/api/products")
 @Validated
@@ -31,6 +34,7 @@ public class ProductController {
 
     private static final String WRONG_PARAM_NAME_MSG = "Product name must contain at least one " +
             "letter and can include only letters, digits, dash (-) and underscore (_)";
+    private static final String SUCCESS = "SUCCESS";
 
     private final ProductService productService;
 
@@ -45,7 +49,7 @@ public class ProductController {
      * GET /api/products?offset=0&limit=10
      */
     @GetMapping
-    public ResponseEntity<PaginatedResponseDto<ProductResponseDto>> getPaginatedProducts(
+    public ResponseEntity<ApiResponse<PaginatedResponseDto<ProductResponseDto>>> getPaginatedProducts(
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Offset must be greater than or equal to 0")
             int offset,
@@ -60,7 +64,7 @@ public class ProductController {
         PaginatedResponseDto<ProductResponseDto> response =
                 productService.getPaginatedProducts(offset, limit, baseUrl);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
     }
 
     /**
@@ -68,12 +72,12 @@ public class ProductController {
      * Find a product by ID. Returns 404 if not found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> findById(
+    public ResponseEntity<ApiResponse<ProductResponseDto>> findById(
             @Positive(message = "Product id must be positive")
             @PathVariable("id") long id) {
 
-        ProductResponseDto product = productService.findById(id);
-        return ResponseEntity.ok(product);
+        ProductResponseDto response = productService.findById(id);
+        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
     }
 
     /**
@@ -81,7 +85,7 @@ public class ProductController {
      * Find a product by name. Returns 404 if not found
      */
     @GetMapping("/by-name")
-    public ResponseEntity<ProductResponseDto> findByName(
+    public ResponseEntity<ApiResponse<ProductResponseDto>> findByName(
             @RequestParam("name")
             @Size(max = 255, message = "Product name must be at most 255 characters")
             @Pattern(
@@ -90,8 +94,8 @@ public class ProductController {
             )
             String name) {
 
-        ProductResponseDto product = productService.findByName(name);
-        return ResponseEntity.ok(product);
+        ProductResponseDto response = productService.findByName(name);
+        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
     }
 
     /**
@@ -99,11 +103,12 @@ public class ProductController {
      * Add a new product
      */
     @PostMapping
-    public ResponseEntity<ProductResponseDto> createProduct(
+    public ResponseEntity<ApiResponse<ProductResponseDto>> createProduct(
             @Valid @RequestBody CreateProductRequestDto request
     ) {
         ProductResponseDto createdProduct = productService.createProduct(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(createdProduct, SUCCESS, Instant.now()));
     }
 
     /**
@@ -111,11 +116,11 @@ public class ProductController {
      * Buy 1 unit of a product by ID. Throws 404 if not found or 409 if out of stock
      */
     @PostMapping("/buy")
-    public ResponseEntity<ProductResponseDto> buyProduct(
+    public ResponseEntity<ApiResponse<ProductResponseDto>> buyProduct(
             @Valid @RequestBody BuyProductRequestDto request
     ) {
-        ProductResponseDto boughtProduct = productService.buyProduct(request);
-        return ResponseEntity.ok(boughtProduct);
+        ProductResponseDto response = productService.buyProduct(request);
+        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
     }
 
     /**
@@ -123,10 +128,10 @@ public class ProductController {
      * Change the price of a product by ID
      */
     @PutMapping("/change-price")
-    public ResponseEntity<ProductResponseDto> changePrice(
+    public ResponseEntity<ApiResponse<ProductResponseDto>> changePrice(
             @Valid @RequestBody ChangePriceRequestDto request
     ) {
-        ProductResponseDto updatedProduct = productService.changePrice(request.id(), request.price());
-        return ResponseEntity.ok(updatedProduct);
+        ProductResponseDto response = productService.changePrice(request.id(), request.price());
+        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
     }
 }
