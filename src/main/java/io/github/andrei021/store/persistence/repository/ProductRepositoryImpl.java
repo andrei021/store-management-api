@@ -85,6 +85,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         return new ProductResponseDto(generatedId, name, price, stock);
     }
 
+    @Override
     public boolean buyProduct(long id) {
         MapSqlParameterSource params = new MapSqlParameterSource(PRODUCT_ID_COLUMN, id);
         int updated = namedJdbcTemplate.update(BUY_PRODUCT_QUERY, params);
@@ -94,6 +95,23 @@ public class ProductRepositoryImpl implements ProductRepository {
             return true;
         } else {
             log.info("Failed to buy product with id=[{}] (out of stock or not found)", id);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean changePrice(long id, BigDecimal newPrice) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PRODUCT_ID_COLUMN, id)
+                .addValue(PRODUCT_PRICE_COLUMN, newPrice);
+
+        int updated = namedJdbcTemplate.update(DefaultSqlQueryProvider.CHANGE_PRICE_QUERY, params);
+
+        if (updated > 0) {
+            log.info("Successfully changed price for product with id=[{}] to [{}]", id, newPrice);
+            return true;
+        } else {
+            log.info("Failed to change price for product with id=[{}] (product not found)", id);
             return false;
         }
     }

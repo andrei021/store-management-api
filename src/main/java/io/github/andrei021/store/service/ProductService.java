@@ -1,9 +1,11 @@
 package io.github.andrei021.store.service;
 
-import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
+import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
+
+import java.math.BigDecimal;
 
 public interface ProductService {
 
@@ -13,7 +15,9 @@ public interface ProductService {
 
     PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit, String baseUrl);
 
-    ProductResponseDto createProduct(AddProductRequestDto request);
+    ProductResponseDto createProduct(CreateProductRequestDto request);
 
     ProductResponseDto buyProduct(BuyProductRequestDto request);
+
+    ProductResponseDto changePrice(long id, BigDecimal newPrice);
 }

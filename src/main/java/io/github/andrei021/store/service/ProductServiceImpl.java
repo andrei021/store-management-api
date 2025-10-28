@@ -1,6 +1,6 @@
 package io.github.andrei021.store.service;
 
-import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
+import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -78,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponseDto createProduct(AddProductRequestDto request) {
+    public ProductResponseDto createProduct(CreateProductRequestDto request) {
         try {
             return productRepository.createProduct(request.name(), request.price(), request.stock());
         } catch (DataIntegrityViolationException exception) {
@@ -107,6 +108,23 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(
                         String.format("Product not found with id=[%d] after buy action", id)
+                ));
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProductResponseDto changePrice(long id, BigDecimal newPrice) {
+        boolean updated = productRepository.changePrice(id, newPrice);
+
+        if (!updated) {
+            throw new ProductNotFoundException(
+                    String.format(PRODUCT_NOT_FOUND_MESSAGE, id)
+            );
+        }
+
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        String.format("Product not found with id=[%d] after price update", id)
                 ));
     }
 

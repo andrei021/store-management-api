@@ -39,4 +39,9 @@ public final class DefaultSqlQueryProvider {
             "UPDATE " + PRODUCT_TABLE_NAME +
                     " SET " + PRODUCT_STOCK_COLUMN + " = " + PRODUCT_STOCK_COLUMN + " - 1" +
                     " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN + " AND " + PRODUCT_STOCK_COLUMN + " > 0";
+
+    public static final String CHANGE_PRICE_QUERY =
+            "UPDATE " + PRODUCT_TABLE_NAME +
+                    " SET " + PRODUCT_PRICE_COLUMN + " = :" + PRODUCT_PRICE_COLUMN +
+                    " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN;
 }

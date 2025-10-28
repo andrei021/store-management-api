@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record AddProductRequestDto(
+public record CreateProductRequestDto(
         @NotBlank(message = "Name must not be blank")
         String name,
 

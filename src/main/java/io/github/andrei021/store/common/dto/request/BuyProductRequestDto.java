@@ -5,4 +5,6 @@ import jakarta.validation.constraints.Positive;
 public record BuyProductRequestDto(
         @Positive(message = "Product id must be positive")
         long id
+
+        // Can be extended in the future
 ) {}

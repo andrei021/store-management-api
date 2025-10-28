@@ -1,6 +1,7 @@
 package io.github.andrei021.store.controller;
 
-import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
+import io.github.andrei021.store.common.dto.request.ChangePriceRequestDto;
+import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -98,7 +100,7 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(
-            @Valid @RequestBody AddProductRequestDto request
+            @Valid @RequestBody CreateProductRequestDto request
     ) {
         ProductResponseDto createdProduct = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
@@ -114,5 +116,17 @@ public class ProductController {
     ) {
         ProductResponseDto boughtProduct = productService.buyProduct(request);
         return ResponseEntity.ok(boughtProduct);
+    }
+
+    /**
+     * PUT /api/products/change-price
+     * Change the price of a product by ID
+     */
+    @PutMapping("/change-price")
+    public ResponseEntity<ProductResponseDto> changePrice(
+            @Valid @RequestBody ChangePriceRequestDto request
+    ) {
+        ProductResponseDto updatedProduct = productService.changePrice(request.id(), request.price());
+        return ResponseEntity.ok(updatedProduct);
     }
 }

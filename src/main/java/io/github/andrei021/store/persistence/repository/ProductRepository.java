@@ -17,4 +17,6 @@ public interface ProductRepository {
     ProductResponseDto createProduct(String name, BigDecimal price, int stock);
 
     boolean buyProduct(long id);
+
+    boolean changePrice(long id, BigDecimal newPrice);
 }
