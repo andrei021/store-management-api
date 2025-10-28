@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.ADD_PRODUCT_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.BUY_PRODUCT_QUERY;
+import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.DELETE_PRODUCT_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PAGINATED_PRODUCTS_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PRODUCT_BY_ID_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PRODUCT_BY_NAME_QUERY;
@@ -114,6 +115,20 @@ public class ProductRepositoryImpl implements ProductRepository {
             log.info("Failed to change price for product with id=[{}] (product not found)", id);
             return false;
         }
+    }
+
+    @Override
+    public boolean deleteProduct(long id) {
+        MapSqlParameterSource params = new MapSqlParameterSource(PRODUCT_ID_COLUMN, id);
+        int deleted = namedJdbcTemplate.update(DELETE_PRODUCT_QUERY, params);
+
+        if (deleted == 0) {
+            log.warn("No product found with id=[{}] to delete", id);
+            return false;
+        }
+
+        log.info("Successfully deleted product with id=[{}]", id);
+        return true;
     }
 
     private Optional<ProductResponseDto> searchForProduct(String sql, MapSqlParameterSource params) {

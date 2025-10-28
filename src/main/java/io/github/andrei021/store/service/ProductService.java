@@ -20,4 +20,6 @@ public interface ProductService {
     ProductResponseDto buyProduct(BuyProductRequestDto request);
 
     ProductResponseDto changePrice(long id, BigDecimal newPrice);
+
+    void deleteProduct(long id);
 }

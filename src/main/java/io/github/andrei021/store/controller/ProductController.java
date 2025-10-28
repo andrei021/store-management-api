@@ -1,8 +1,8 @@
 package io.github.andrei021.store.controller;
 
+import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.request.ChangePriceRequestDto;
 import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
-import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.ApiResponse;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -133,5 +134,18 @@ public class ProductController {
     ) {
         ProductResponseDto response = productService.changePrice(request.id(), request.price());
         return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
+    }
+
+    /**
+     * DELETE /api/products/{id}
+     * Delete a product by ID. Returns 404 if product not found
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(
+            @Positive(message = "Product id must be positive")
+            @PathVariable("id") long id) {
+
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }

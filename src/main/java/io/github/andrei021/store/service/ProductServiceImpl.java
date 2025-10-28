@@ -128,6 +128,14 @@ public class ProductServiceImpl implements ProductService {
                 ));
     }
 
+    @Override
+    public void deleteProduct(long id) {
+        boolean deleted = productRepository.deleteProduct(id);
+        if (!deleted) {
+            throw new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id));
+        }
+    }
+
     private void validateOffset(int offset) {
         if (offset < MIN_PAGINATION_OFFSET) {
             throw new InvalidOffsetException(offset);

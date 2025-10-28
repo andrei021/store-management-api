@@ -19,4 +19,6 @@ public interface ProductRepository {
     boolean buyProduct(long id);
 
     boolean changePrice(long id, BigDecimal newPrice);
+
+    boolean deleteProduct(long id);
 }

@@ -44,4 +44,8 @@ public final class DefaultSqlQueryProvider {
             "UPDATE " + PRODUCT_TABLE_NAME +
                     " SET " + PRODUCT_PRICE_COLUMN + " = :" + PRODUCT_PRICE_COLUMN +
                     " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN;
+
+    public static final String DELETE_PRODUCT_QUERY =
+            "DELETE FROM " + PRODUCT_TABLE_NAME +
+                    " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN;
 }
