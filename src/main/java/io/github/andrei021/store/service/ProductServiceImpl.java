@@ -1,11 +1,14 @@
 package io.github.andrei021.store.service;
 
+import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.common.exception.InvalidOffsetException;
+import io.github.andrei021.store.common.exception.ProductAlreadyExistsException;
 import io.github.andrei021.store.common.exception.ProductNotFoundException;
 import io.github.andrei021.store.persistence.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +66,16 @@ public class ProductServiceImpl implements ProductService {
                 hasNext,
                 hasPrevious
         );
+    }
+
+    @Transactional
+    public ProductResponseDto addProduct(AddProductRequestDto request) {
+        try {
+            return productRepository.addProduct(request);
+        } catch (DataIntegrityViolationException exception) {
+            String message = String.format("Product with name=[%s] already exists", request.name());
+            throw new ProductAlreadyExistsException(message, exception);
+        }
     }
 
     private void validateOffset(int offset) {

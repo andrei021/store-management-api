@@ -1,16 +1,21 @@
 package io.github.andrei021.store.controller;
 
+import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.service.ProductService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -84,5 +89,17 @@ public class ProductController {
 
         ProductResponseDto product = productService.findByName(name);
         return ResponseEntity.ok(product);
+    }
+
+    /**
+     * POST /api/products
+     * Add a new product
+     */
+    @PostMapping
+    public ResponseEntity<ProductResponseDto> addProduct(
+            @Valid @RequestBody AddProductRequestDto request
+    ) {
+        ProductResponseDto createdProduct = productService.addProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 }

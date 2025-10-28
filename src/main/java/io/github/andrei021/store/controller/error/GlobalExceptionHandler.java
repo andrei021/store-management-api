@@ -5,11 +5,15 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.stream.Collectors;
 
 import static io.github.andrei021.store.controller.ControllerUtil.buildErrorResponse;
 
@@ -75,6 +79,33 @@ public class GlobalExceptionHandler {
                 "Please check the API documentation", paramName);
 
         log.warn("Required parameter [{}] is missing for endpoint [{}]", paramName, requestUri);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException exception,
+            ServletWebRequest request
+    ) {
+        String message = exception.getBindingResult().getFieldErrors().stream()
+                .map(fe -> {
+                    Object rejectedValue = fe.getRejectedValue();
+                    String rejectedPart = (rejectedValue != null) ? ", but got [" + rejectedValue + "]" : "";
+                    return fe.getField() + ": " + fe.getDefaultMessage() + rejectedPart;
+                })
+                .collect(Collectors.joining("; "));
+
+        log.warn("Validation failed when calling [{}]: {}", request.getRequest().getRequestURI(), message);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException exception,
+            ServletWebRequest request
+    ) {
+        String message = "Wrong JSON format request or invalid field types";
+        log.warn("Failed to parse request body at [{}]: {}", request.getRequest().getRequestURI(), exception.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 

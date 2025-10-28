@@ -1,5 +1,6 @@
 package io.github.andrei021.store.persistence.repository;
 
+import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface ProductRepository {
     Optional<ProductResponseDto> findByName(String name);
 
     List<ProductResponseDto> getPaginatedProducts(int offset, int limit);
+
+    ProductResponseDto addProduct(AddProductRequestDto request);
 }

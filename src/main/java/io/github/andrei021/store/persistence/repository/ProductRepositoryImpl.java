@@ -1,21 +1,28 @@
 package io.github.andrei021.store.persistence.repository;
 
+import io.github.andrei021.store.common.dto.request.AddProductRequestDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.ADD_PRODUCT_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PAGINATED_PRODUCTS_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PRODUCT_BY_ID_QUERY;
 import static io.github.andrei021.store.persistence.DefaultSqlQueryProvider.GET_PRODUCT_BY_NAME_QUERY;
 import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_ID_COLUMN;
+import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_NAME_COLUMN;
 import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_NAME_NORMALIZED_COLUMN;
+import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_PRICE_COLUMN;
+import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_STOCK_COLUMN;
 
 @Repository
 @Slf4j
@@ -53,6 +60,30 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         log.info("Fetched [{}] products (offset={}, limit={})", products.size(), offset, limit);
         return products;
+    }
+
+    public ProductResponseDto addProduct(AddProductRequestDto request) {
+        log.debug("Adding new product with name=[{}], price=[{}], stock=[{}]",
+                request.name(), request.price(), request.stock());
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue(PRODUCT_NAME_COLUMN, request.name())
+                .addValue(PRODUCT_NAME_NORMALIZED_COLUMN, request.name().trim().toUpperCase())
+                .addValue(PRODUCT_PRICE_COLUMN, request.price())
+                .addValue(PRODUCT_STOCK_COLUMN, request.stock());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedJdbcTemplate.update(ADD_PRODUCT_QUERY, params, keyHolder, new String[]{PRODUCT_ID_COLUMN});
+
+        long generatedId = keyHolder.getKey().longValue();
+        log.info("Inserted product with id=[{}] and name=[{}]", generatedId, request.name());
+
+        return new ProductResponseDto(
+                generatedId,
+                request.name(),
+                request.price(),
+                request.stock()
+        );
     }
 
     private Optional<ProductResponseDto> searchForProduct(String sql, MapSqlParameterSource params) {
