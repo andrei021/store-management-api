@@ -1,11 +1,11 @@
-package io.github.andrei021.store.controller.error;
+package io.github.andrei021.store.exception.handler;
 
 import io.github.andrei021.store.common.dto.response.ApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
-import io.github.andrei021.store.common.exception.InsufficientStockException;
-import io.github.andrei021.store.common.exception.InvalidOffsetException;
-import io.github.andrei021.store.common.exception.ProductAlreadyExistsException;
-import io.github.andrei021.store.common.exception.ProductNotFoundException;
+import io.github.andrei021.store.exception.instance.InsufficientStockException;
+import io.github.andrei021.store.exception.instance.InvalidOffsetException;
+import io.github.andrei021.store.exception.instance.ProductAlreadyExistsException;
+import io.github.andrei021.store.exception.instance.ProductNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static io.github.andrei021.store.controller.ControllerUtil.buildErrorResponse;
+import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorResponse;
 
 @Order(1)
 @RestControllerAdvice

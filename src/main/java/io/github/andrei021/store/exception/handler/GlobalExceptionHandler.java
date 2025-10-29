@@ -1,4 +1,4 @@
-package io.github.andrei021.store.controller.error;
+package io.github.andrei021.store.exception.handler;
 
 import io.github.andrei021.store.common.dto.response.ApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
@@ -16,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.stream.Collectors;
 
-import static io.github.andrei021.store.controller.ControllerUtil.buildErrorResponse;
+import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorResponse;
 
 @ControllerAdvice
 @Slf4j

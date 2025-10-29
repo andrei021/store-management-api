@@ -1,4 +1,4 @@
-package io.github.andrei021.store.common.exception;
+package io.github.andrei021.store.exception.instance;
 
 public class ProductAlreadyExistsException extends RuntimeException {
 

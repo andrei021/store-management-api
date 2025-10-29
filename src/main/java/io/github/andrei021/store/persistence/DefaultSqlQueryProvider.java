@@ -6,6 +6,11 @@ import static io.github.andrei021.store.persistence.constant.ProductTableConstan
 import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_PRICE_COLUMN;
 import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_STOCK_COLUMN;
 import static io.github.andrei021.store.persistence.constant.ProductTableConstants.PRODUCT_TABLE_NAME;
+import static io.github.andrei021.store.persistence.constant.UserTableConstants.APP_USER_USERNAME_COLUMN;
+import static io.github.andrei021.store.persistence.constant.UserTableConstants.USER_ROLES_ROLE_COLUMN;
+import static io.github.andrei021.store.persistence.constant.UserTableConstants.USER_ROLES_TABLE_NAME;
+import static io.github.andrei021.store.persistence.constant.UserTableConstants.USER_ROLES_USER_ID_COLUMN;
+import static io.github.andrei021.store.persistence.constant.UserTableConstants.USER_TABLE_NAME;
 
 public final class DefaultSqlQueryProvider {
 
@@ -48,4 +53,12 @@ public final class DefaultSqlQueryProvider {
     public static final String DELETE_PRODUCT_QUERY =
             "DELETE FROM " + PRODUCT_TABLE_NAME +
                     " WHERE " + PRODUCT_ID_COLUMN + " = :" + PRODUCT_ID_COLUMN;
+
+    public static final String GET_USER_BY_USERNAME_QUERY =
+            "SELECT * FROM " + USER_TABLE_NAME +
+                    " WHERE " + APP_USER_USERNAME_COLUMN + " = :" + APP_USER_USERNAME_COLUMN;
+
+    public static final String GET_USER_ROLES_BY_USER_ID_QUERY =
+            "SELECT " + USER_ROLES_ROLE_COLUMN + " FROM " + USER_ROLES_TABLE_NAME +
+                    " WHERE " + USER_ROLES_USER_ID_COLUMN + " = :" + USER_ROLES_USER_ID_COLUMN;
 }

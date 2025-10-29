@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static io.github.andrei021.store.controller.ControllerUtil.buildErrorResponse;
+import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorResponse;
 
 @RestController
 @RequestMapping("/api")
