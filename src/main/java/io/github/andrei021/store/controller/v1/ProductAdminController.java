@@ -1,4 +1,4 @@
-package io.github.andrei021.store.controller;
+package io.github.andrei021.store.controller.v1;
 
 
 import io.github.andrei021.store.common.dto.request.ChangePriceRequestDto;
@@ -23,9 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
+import static io.github.andrei021.store.controller.ApiVersion.API_V1;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping(API_V1 + "/admin")
 @Validated
 @PreAuthorize("hasAnyRole('ADMIN')")
 public class ProductAdminController {
@@ -37,7 +38,7 @@ public class ProductAdminController {
     }
 
     /**
-     * POST /api/admin/createProduct
+     * POST /api/v1/admin/createProduct
      * Add a new product
      */
     @PostMapping("/createProduct")
@@ -50,7 +51,7 @@ public class ProductAdminController {
     }
 
     /**
-     * PUT /api/admin/change-price
+     * PUT /api/v1/admin/change-price
      * Change the price of a product by ID
      */
     @PutMapping("/change-price")
@@ -62,7 +63,7 @@ public class ProductAdminController {
     }
 
     /**
-     * DELETE /api/admin/{id}
+     * DELETE /api/v1/admin/{id}
      * Delete a product by ID. Returns 404 if product not found
      */
     @DeleteMapping("/{id}")

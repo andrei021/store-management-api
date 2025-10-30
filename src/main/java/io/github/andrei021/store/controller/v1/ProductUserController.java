@@ -1,4 +1,4 @@
-package io.github.andrei021.store.controller;
+package io.github.andrei021.store.controller.v1;
 
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
 import io.github.andrei021.store.common.dto.response.ApiResponse;
@@ -26,9 +26,10 @@ import java.time.Instant;
 
 import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
 import static io.github.andrei021.store.controller.ControllerUtil.WRONG_PARAM_NAME_MSG;
+import static io.github.andrei021.store.controller.ApiVersion.API_V1;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(API_V1 + "/products")
 @Validated
 @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class ProductUserController {
@@ -43,7 +44,7 @@ public class ProductUserController {
      * Get paginated list of products
      *
      * Example:
-     * GET /api/products?offset=0&limit=10
+     * GET /api/v1/products?offset=0&limit=10
      */
     @GetMapping
     public ResponseEntity<ApiResponse<PaginatedResponseDto<ProductResponseDto>>> getPaginatedProducts(
@@ -65,7 +66,7 @@ public class ProductUserController {
     }
 
     /**
-     * GET /api/products/{id}
+     * GET /api/v1/products/{id}
      * Find a product by ID. Returns 404 if not found
      */
     @GetMapping("/{id}")
@@ -78,7 +79,7 @@ public class ProductUserController {
     }
 
     /**
-     * GET /api/products?name={name}
+     * GET /api/v1/products?name={name}
      * Find a product by name. Returns 404 if not found
      */
     @GetMapping("/by-name")
@@ -96,7 +97,7 @@ public class ProductUserController {
     }
 
     /**
-     * POST /api/products/buy
+     * POST /api/v1/products/buy
      * Buy 1 unit of a product by ID. Throws 404 if not found or 409 if out of stock
      */
     @PostMapping("/buy")
