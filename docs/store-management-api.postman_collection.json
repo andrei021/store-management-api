@@ -1,0 +1,151 @@
+{
+  "info": {
+    "name": "Store Management API",
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
+    "description": "Postman collection for Store Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Endpoints",
+      "auth": {
+        "type": "basic",
+        "basic": [
+          { "key": "username", "value": "{{USER_NAME}}", "type": "string" },
+          { "key": "password", "value": "{{USER_PASS}}", "type": "string" }
+        ]
+      },
+      "item": [
+        {
+          "name": "Get Paginated Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?offset=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["products"],
+              "query": [
+                { "key": "offset", "value": "0" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Find Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["products","1"]
+            }
+          }
+        },
+        {
+          "name": "Find Product by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/by-name?name=Product1",
+              "host": ["{{base_url}}"],
+              "path": ["products","by-name"],
+              "query": [
+                { "key": "name", "value": "Product1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buy Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"id\": 1 }"
+            },
+            "url": {
+              "raw": "{{base_url}}/products/buy",
+              "host": ["{{base_url}}"],
+              "path": ["products","buy"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Endpoints",
+      "auth": {
+        "type": "basic",
+        "basic": [
+          { "key": "username", "value": "{{ADMIN_NAME}}", "type": "string" },
+          { "key": "password", "value": "{{ADMIN_PASS}}", "type": "string" }
+        ]
+      },
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Product1\", \"price\": 499.99, \"stock\": 10 }"
+            },
+            "url": {
+              "raw": "{{base_url_admin}}/createProduct",
+              "host": ["{{base_url_admin}}"],
+              "path": ["createProduct"]
+            }
+          }
+        },
+        {
+          "name": "Change Price",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"id\": 1, \"price\": 499.99 }"
+            },
+            "url": {
+              "raw": "{{base_url_admin}}/change-price",
+              "host": ["{{base_url_admin}}"],
+              "path": ["change-price"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url_admin}}/1",
+              "host": ["{{base_url_admin}}"],
+              "path": ["1"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080/api/v1" },
+    { "key": "base_url_admin", "value": "http://localhost:8080/api/v1/admin" },
+    { "key": "USER_NAME", "value": "user" },
+    { "key": "USER_PASS", "value": "user" },
+    { "key": "ADMIN_NAME", "value": "admin" },
+    { "key": "ADMIN_PASS", "value": "admin" }
+  ]
+}
