@@ -3,21 +3,21 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="4" author="andrei021">
-        <loadData file="db/data/product-test-data.csv" tableName="product" separator=","/>
+    <changeSet id="4" author="andrei021" context="test">
+        <loadData file="db/data/product-test-data-integration.csv" tableName="product" separator=","/>
     </changeSet>
 
-    <changeSet id="5" author="andrei021">
-        <sql>ALTER TABLE product ALTER COLUMN id RESTART WITH 500001;</sql>
+    <changeSet id="5" author="andrei021" context="test">
+        <sql>ALTER TABLE product ALTER COLUMN id RESTART WITH 3;</sql>
     </changeSet>
 
-    <changeSet id="6" author="andrei021">
+    <changeSet id="6" author="andrei021" context="test">
         <loadData
-                file="db/data/app-user-test-data.csv"
+                file="db/data/app-user-test-data-integration.csv"
                 tableName="app_user"/>
 
         <loadData
-                file="db/data/user-roles-test-data.csv"
+                file="db/data/user-roles-test-data-integration.csv"
                 tableName="user_roles"/>
     </changeSet>
 
