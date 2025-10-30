@@ -1,6 +1,6 @@
 package io.github.andrei021.store.exception.handler;
 
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorRespon
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleConstraintViolation(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleConstraintViolation(
             ConstraintViolationException exception,
             ServletWebRequest request
     ) {
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>>handleTypeMismatch(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>>handleTypeMismatch(
             MethodArgumentTypeMismatchException exception,
             ServletWebRequest request
     ) {
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>>handleMissingQueryParams(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>>handleMissingQueryParams(
             MissingServletRequestParameterException exception,
             ServletWebRequest request
     ) {
@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleMethodArgumentNotValid(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exception,
             ServletWebRequest request
     ) {
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleHttpMessageNotReadable(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleHttpMessageNotReadable(
             HttpMessageNotReadableException exception,
             ServletWebRequest request
     ) {
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleUnknown(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleUnknown(
             Exception exception,
             ServletWebRequest request
     ) {

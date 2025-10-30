@@ -1,7 +1,7 @@
 package io.github.andrei021.store;
 
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class GetAndBuyProductIntegrationTest {
 	@Test
 	void getAndBuyProductHappyFlowTest() {
 		restTemplate = restTemplate.withBasicAuth("user", "user");
-		ResponseEntity<ApiResponse<PaginatedResponseDto<ProductResponseDto>>> paginatedResponse =
+		ResponseEntity<StoreApiResponse<PaginatedResponseDto<ProductResponseDto>>> paginatedResponse =
 				restTemplate.exchange(
 						"/api/v1/products?offset=0&limit=10",
 						HttpMethod.GET,
@@ -44,7 +44,7 @@ class GetAndBuyProductIntegrationTest {
 		ProductResponseDto product = paginatedResponse.getBody().data().content().getFirst();
 
 		BuyProductRequestDto request = new BuyProductRequestDto(product.id());
-		ResponseEntity<ApiResponse<ProductResponseDto>> buyResponse =
+		ResponseEntity<StoreApiResponse<ProductResponseDto>> buyResponse =
 				restTemplate.exchange(
 						"/api/v1/products/buy",
 						HttpMethod.POST,

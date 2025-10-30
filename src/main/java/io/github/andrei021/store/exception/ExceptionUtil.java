@@ -1,6 +1,6 @@
 package io.github.andrei021.store.exception;
 
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public final class ExceptionUtil {
     private ExceptionUtil() {
     }
 
-    public static ResponseEntity<ApiResponse<ErrorResponseDto>> buildErrorResponse(
+    public static ResponseEntity<StoreApiResponse<ErrorResponseDto>> buildErrorResponse(
             HttpStatus status,
             String message,
             ServletWebRequest request
@@ -28,6 +28,6 @@ public final class ExceptionUtil {
                 .build();
 
         return ResponseEntity.status(status)
-                .body(new ApiResponse<>(errorResponseDto, FAILED_REQUEST, Instant.now()));
+                .body(new StoreApiResponse<>(errorResponseDto, FAILED_REQUEST, Instant.now()));
     }
 }

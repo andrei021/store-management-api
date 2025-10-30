@@ -1,6 +1,6 @@
 package io.github.andrei021.store.controller.v1;
 
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorRespon
 public class FallbackController {
 
     @RequestMapping("/**")
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleUnknownEndpoint(ServletWebRequest request) {
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleUnknownEndpoint(ServletWebRequest request) {
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "The endpoint is not provided by this API. Please check the API documentation",

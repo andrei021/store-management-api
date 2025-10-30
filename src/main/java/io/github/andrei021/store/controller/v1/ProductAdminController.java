@@ -3,8 +3,12 @@ package io.github.andrei021.store.controller.v1;
 
 import io.github.andrei021.store.common.dto.request.ChangePriceRequestDto;
 import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
-import io.github.andrei021.store.common.dto.response.ApiResponse;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
+import io.github.andrei021.store.controller.v1.docs.CreateProductApiDocumentation;
+import io.github.andrei021.store.controller.v1.docs.DeleteProductApiDocumentation;
+import io.github.andrei021.store.controller.v1.docs.ProductNotFoundApiDocumentation;
+import io.github.andrei021.store.controller.v1.docs.ProductResponseApiDocumentation;
 import io.github.andrei021.store.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -22,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 
-import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
 import static io.github.andrei021.store.controller.ApiVersion.API_V1;
+import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
 
 @RestController
 @RequestMapping(API_V1 + "/admin")
@@ -39,15 +43,16 @@ public class ProductAdminController {
 
     /**
      * POST /api/v1/admin/createProduct
-     * Add a new product
+     * Creates a new product
      */
     @PostMapping("/createProduct")
-    public ResponseEntity<ApiResponse<ProductResponseDto>> createProduct(
+    @CreateProductApiDocumentation
+    public ResponseEntity<StoreApiResponse<ProductResponseDto>> createProduct(
             @Valid @RequestBody CreateProductRequestDto request
     ) {
         ProductResponseDto createdProduct = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(createdProduct, SUCCESS, Instant.now()));
+                .body(new StoreApiResponse<>(createdProduct, SUCCESS, Instant.now()));
     }
 
     /**
@@ -55,11 +60,13 @@ public class ProductAdminController {
      * Change the price of a product by ID
      */
     @PutMapping("/change-price")
-    public ResponseEntity<ApiResponse<ProductResponseDto>> changePrice(
+    @ProductNotFoundApiDocumentation
+    @ProductResponseApiDocumentation
+    public ResponseEntity<StoreApiResponse<ProductResponseDto>> changePrice(
             @Valid @RequestBody ChangePriceRequestDto request
     ) {
         ProductResponseDto response = productService.changePrice(request.id(), request.price());
-        return ResponseEntity.ok(new ApiResponse<>(response, SUCCESS, Instant.now()));
+        return ResponseEntity.ok(new StoreApiResponse<>(response, SUCCESS, Instant.now()));
     }
 
     /**
@@ -67,11 +74,13 @@ public class ProductAdminController {
      * Delete a product by ID. Returns 404 if product not found
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(
+    @ProductNotFoundApiDocumentation
+    @DeleteProductApiDocumentation
+    public ResponseEntity<StoreApiResponse<Void>> deleteById(
             @Positive(message = "Product id must be positive")
             @PathVariable("id") long id) {
 
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new StoreApiResponse<>(null, SUCCESS, Instant.now()));
     }
 }

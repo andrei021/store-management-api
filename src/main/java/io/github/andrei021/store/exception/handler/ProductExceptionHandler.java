@@ -1,6 +1,6 @@
 package io.github.andrei021.store.exception.handler;
 
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import io.github.andrei021.store.exception.instance.InsufficientStockException;
 import io.github.andrei021.store.exception.instance.InvalidOffsetException;
@@ -22,7 +22,7 @@ import static io.github.andrei021.store.exception.ExceptionUtil.buildErrorRespon
 public class ProductExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleProductNotFound(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleProductNotFound(
             ProductNotFoundException exception,
             ServletWebRequest request
     ) {
@@ -32,7 +32,7 @@ public class ProductExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOffsetException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>>handleInvalidOffset(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>>handleInvalidOffset(
             InvalidOffsetException exception,
             ServletWebRequest request
     ) {
@@ -42,7 +42,7 @@ public class ProductExceptionHandler {
     }
 
     @ExceptionHandler(ProductAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleProductAlreadyExists(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleProductAlreadyExists(
             ProductAlreadyExistsException exception,
             ServletWebRequest request
     ) {
@@ -52,7 +52,7 @@ public class ProductExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientStockException.class)
-    public ResponseEntity<ApiResponse<ErrorResponseDto>> handleInsufficientStock(
+    public ResponseEntity<StoreApiResponse<ErrorResponseDto>> handleInsufficientStock(
             InsufficientStockException exception,
             ServletWebRequest request
     ) {

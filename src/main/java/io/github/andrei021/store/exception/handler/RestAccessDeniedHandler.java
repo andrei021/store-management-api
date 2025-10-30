@@ -1,7 +1,7 @@
 package io.github.andrei021.store.exception.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.andrei021.store.common.dto.response.ApiResponse;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,7 +44,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
                 .path(request.getRequestURI())
                 .build();
 
-        mapper.writeValue(response.getOutputStream(), new ApiResponse<>(
+        mapper.writeValue(response.getOutputStream(), new StoreApiResponse<>(
                 errorResponse,
                 FAILED_REQUEST,
                 Instant.now()
