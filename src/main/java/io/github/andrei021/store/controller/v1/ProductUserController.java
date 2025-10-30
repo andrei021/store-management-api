@@ -1,9 +1,9 @@
 package io.github.andrei021.store.controller.v1;
 
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
-import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
+import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.controller.v1.docs.GetPaginatedProductsApiDocumentation;
 import io.github.andrei021.store.controller.v1.docs.InsufficientStockApiDocumentation;
 import io.github.andrei021.store.controller.v1.docs.ProductNotFoundApiDocumentation;
@@ -24,13 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.ServletWebRequest;
 
 import java.time.Instant;
 
+import static io.github.andrei021.store.controller.ApiVersion.API_V1;
 import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
 import static io.github.andrei021.store.controller.ControllerUtil.WRONG_PARAM_NAME_MSG;
-import static io.github.andrei021.store.controller.ApiVersion.API_V1;
 
 @RestController
 @RequestMapping(API_V1 + "/products")
@@ -59,14 +58,9 @@ public class ProductUserController {
 
             @RequestParam(defaultValue = "10")
             @Positive(message = "Limit must be a positive number")
-            int limit,
-
-            ServletWebRequest request
+            int limit
     ) {
-        String baseUrl = request.getRequest().getRequestURL().toString();
-        PaginatedResponseDto<ProductResponseDto> response =
-                productService.getPaginatedProducts(offset, limit, baseUrl);
-
+        PaginatedResponseDto<ProductResponseDto> response = productService.getPaginatedProducts(offset, limit);
         return ResponseEntity.ok(new StoreApiResponse<>(response, SUCCESS, Instant.now()));
     }
 

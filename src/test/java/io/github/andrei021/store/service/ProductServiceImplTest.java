@@ -141,6 +141,7 @@ public class ProductServiceImplTest {
             int offset = 0;
             int limit = 2;
             String baseUrl = "/api/products";
+            productService = new ProductServiceImpl(productRepository, baseUrl);
 
             List<ProductResponseDto> products = List.of(
                     buildProduct(1L, "p1", BigDecimal.valueOf(10.0), 5),
@@ -149,7 +150,7 @@ public class ProductServiceImplTest {
             when(productRepository.getPaginatedProducts(offset, limit)).thenReturn(products);
 
             PaginatedResponseDto<ProductResponseDto> response =
-                    productService.getPaginatedProducts(offset, limit, baseUrl);
+                    productService.getPaginatedProducts(offset, limit);
             Mockito.verify(productRepository).getPaginatedProducts(offset, limit);
 
             assertAll(
@@ -172,7 +173,7 @@ public class ProductServiceImplTest {
 
             InvalidOffsetException exception = assertThrows(
                     InvalidOffsetException.class,
-                    () -> productService.getPaginatedProducts(offset, limit, "/api/products")
+                    () -> productService.getPaginatedProducts(offset, limit)
             );
 
             Mockito.verifyNoInteractions(productRepository);
@@ -192,7 +193,7 @@ public class ProductServiceImplTest {
             when(productRepository.getPaginatedProducts(offset, defaultLimit)).thenReturn(products);
 
             PaginatedResponseDto<ProductResponseDto> response =
-                    productService.getPaginatedProducts(offset, limit, "/api/products");
+                    productService.getPaginatedProducts(offset, limit);
             Mockito.verify(productRepository).getPaginatedProducts(offset, defaultLimit);
 
             assertEquals(defaultLimit, response.limit());
@@ -211,7 +212,7 @@ public class ProductServiceImplTest {
             when(productRepository.getPaginatedProducts(offset, maxLimit)).thenReturn(products);
 
             PaginatedResponseDto<ProductResponseDto> response =
-                    productService.getPaginatedProducts(offset, limit, "/api/products");
+                    productService.getPaginatedProducts(offset, limit);
             Mockito.verify(productRepository).getPaginatedProducts(offset, maxLimit);
 
             assertEquals(maxLimit, response.limit());

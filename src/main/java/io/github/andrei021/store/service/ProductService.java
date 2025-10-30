@@ -13,7 +13,7 @@ public interface ProductService {
 
     ProductResponseDto findByName(String name);
 
-    PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit, String baseUrl);
+    PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit);
 
     ProductResponseDto createProduct(CreateProductRequestDto request);
 

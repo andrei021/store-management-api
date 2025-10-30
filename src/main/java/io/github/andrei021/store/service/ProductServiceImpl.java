@@ -1,7 +1,7 @@
 package io.github.andrei021.store.service;
 
-import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.request.BuyProductRequestDto;
+import io.github.andrei021.store.common.dto.request.CreateProductRequestDto;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.exception.instance.InsufficientStockException;
@@ -10,6 +10,7 @@ import io.github.andrei021.store.exception.instance.ProductAlreadyExistsExceptio
 import io.github.andrei021.store.exception.instance.ProductNotFoundException;
 import io.github.andrei021.store.persistence.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,9 +30,11 @@ public class ProductServiceImpl implements ProductService {
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id=[%d]";
 
     private final ProductRepository productRepository;
+    private final String baseUrl;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, @Value("${base.url}") String baseUrl) {
         this.productRepository = productRepository;
+        this.baseUrl = baseUrl;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit, String baseUrl) {
+    public PaginatedResponseDto<ProductResponseDto> getPaginatedProducts(int offset, int limit) {
         validateOffset(offset);
         limit = checkAndGetLimit(limit);
 
