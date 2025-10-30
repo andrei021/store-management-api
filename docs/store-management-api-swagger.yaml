@@ -1,0 +1,416 @@
+openapi: 3.0.1
+info:
+  title: Store Management API
+  description: API for managing products in the store
+  version: v1
+servers:
+  - url: http://localhost:8080
+    description: Local server
+security:
+  - basicAuth: []
+paths:
+  /api/v1/admin/change-price:
+    put:
+      tags:
+        - product-admin-controller
+      operationId: changePrice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePriceRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Response Example:
+                  description: Product Response Example
+                  value:
+                    data:
+                      id: 1
+                      name: Product1
+                      price: 499.99
+                      stock: 10
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Not Found Exception Example:
+                  description: Product Not Found Exception Example
+                  value:
+                    data:
+                      status: 404
+                      error: NOT_FOUND
+                      message: Product not found with id=[<value>]
+                      path: /api/v1/products/{id}
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/products/buy:
+    post:
+      tags:
+        - product-user-controller
+      operationId: buyProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyProductRequestDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Response Example:
+                  description: Product Response Example
+                  value:
+                    data:
+                      id: 1
+                      name: Product1
+                      price: 499.99
+                      stock: 10
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Not Found Exception Example:
+                  description: Product Not Found Exception Example
+                  value:
+                    data:
+                      status: 404
+                      error: NOT_FOUND
+                      message: Product not found with id=[<value>]
+                      path: /api/v1/products/{id}
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+        '409':
+          description: Insufficient stock to complete purchase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Insufficient Stock Exception Example:
+                  description: Insufficient Stock Exception Example
+                  value:
+                    data:
+                      status: 409
+                      error: CONFLICT
+                      message: Product with id=[<value>] is out of stock
+                      path: /api/v1/products/buy
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/admin/createProduct:
+    post:
+      tags:
+        - product-admin-controller
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Created Example:
+                  description: Product Created Example
+                  value:
+                    data:
+                      id: 1
+                      name: Product1
+                      price: 499.99
+                      stock: 10
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '409':
+          description: Product already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Already Exists Exception Example:
+                  description: Product Already Exists Exception Example
+                  value:
+                    data:
+                      status: 409
+                      error: CONFLICT
+                      message: Product with name=[<value>] already exists
+                      path: /api/v1/admin/createProduct
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/products:
+    get:
+      tags:
+        - product-user-controller
+      operationId: getPaginatedProducts
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: Paginated list of products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              example:
+                data:
+                  content:
+                    - id: 1
+                      name: Product1
+                      price: 9.99
+                      stock: 10
+                    - id: 2
+                      name: Product2
+                      price: 10.99
+                      stock: 50
+                  offset: 0
+                  limit: 2
+                  nextPage: https://api.example.com/api/v1/products?offset=2&limit=2
+                  prevPage: null
+                  hasNext: true
+                  hasPrevious: false
+                statusMessage: SUCCESS
+                timestamp: '2025-10-30T12:00:00Z'
+        '400':
+          description: Invalid offset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              example:
+                data:
+                  status: 400
+                  error: BAD_REQUEST
+                  message: Offset must be greater than or equal to 0
+                  path: /api/v1/products
+                statusMessage: FAILED_REQUEST
+                timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/products/{id}:
+    get:
+      tags:
+        - product-user-controller
+      operationId: findById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Response Example:
+                  description: Product Response Example
+                  value:
+                    data:
+                      id: 1
+                      name: Product1
+                      price: 499.99
+                      stock: 10
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Not Found Exception Example:
+                  description: Product Not Found Exception Example
+                  value:
+                    data:
+                      status: 404
+                      error: NOT_FOUND
+                      message: Product not found with id=[<value>]
+                      path: /api/v1/products/{id}
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/products/by-name:
+    get:
+      tags:
+        - product-user-controller
+      operationId: findByName
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            maxLength: 255
+            minLength: 0
+            pattern: ^(?=.*[A-Za-z])[A-Za-z0-9_-]+$
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Response Example:
+                  description: Product Response Example
+                  value:
+                    data:
+                      id: 1
+                      name: Product1
+                      price: 499.99
+                      stock: 10
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Not Found Exception Example:
+                  description: Product Not Found Exception Example
+                  value:
+                    data:
+                      status: 404
+                      error: NOT_FOUND
+                      message: Product not found with id=[<value>]
+                      path: /api/v1/products/{id}
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+  /api/v1/admin/{id}:
+    delete:
+      tags:
+        - product-admin-controller
+      operationId: deleteById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Delete Success Example:
+                  description: Delete Success Example
+                  value:
+                    data: null
+                    statusMessage: SUCCESS
+                    timestamp: '2025-10-30T12:00:00Z'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreApiResponse'
+              examples:
+                Product Not Found Exception Example:
+                  description: Product Not Found Exception Example
+                  value:
+                    data:
+                      status: 404
+                      error: NOT_FOUND
+                      message: Product not found with id=[<value>]
+                      path: /api/v1/products/{id}
+                    statusMessage: FAILED_REQUEST
+                    timestamp: '2025-10-30T12:00:00Z'
+components:
+  schemas:
+    ChangePriceRequestDto:
+      required:
+        - price
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        price:
+          minimum: 0
+          exclusiveMinimum: true
+          type: number
+    StoreApiResponse:
+      type: object
+      properties:
+        data:
+          type: object
+        statusMessage:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    BuyProductRequestDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    CreateProductRequestDto:
+      required:
+        - name
+        - price
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          minimum: 0
+          exclusiveMinimum: true
+          type: number
+        stock:
+          minimum: 0
+          type: integer
+          format: int32
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

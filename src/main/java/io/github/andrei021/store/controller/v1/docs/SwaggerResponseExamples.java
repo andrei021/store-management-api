@@ -51,8 +51,8 @@ public final class SwaggerResponseExamples {
                     { "id": 2, "name": "Product2", "price": 10.99, "stock": 50 }
                 ],
                 "offset": 0,
-                "limit": 10,
-                "nextPage": "https://api.example.com/api/v1/products?offset=10&limit=10",
+                "limit": 2,
+                "nextPage": "https://api.example.com/api/v1/products?offset=2&limit=2",
                 "prevPage": null,
                 "hasNext": true,
                 "hasPrevious": false
@@ -86,7 +86,7 @@ public final class SwaggerResponseExamples {
         "statusMessage": "FAILED_REQUEST",
         "timestamp": "2025-10-30T12:00:00Z"
     }
-""";
+    """;
 
     private SwaggerResponseExamples() {
     }

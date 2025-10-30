@@ -5,6 +5,7 @@ import io.github.andrei021.store.common.dto.response.StoreApiResponse;
 import io.github.andrei021.store.common.dto.response.PaginatedResponseDto;
 import io.github.andrei021.store.common.dto.response.ProductResponseDto;
 import io.github.andrei021.store.controller.v1.docs.GetPaginatedProductsApiDocumentation;
+import io.github.andrei021.store.controller.v1.docs.InsufficientStockApiDocumentation;
 import io.github.andrei021.store.controller.v1.docs.ProductNotFoundApiDocumentation;
 import io.github.andrei021.store.controller.v1.docs.ProductResponseApiDocumentation;
 import io.github.andrei021.store.service.ProductService;
@@ -111,6 +112,7 @@ public class ProductUserController {
     @PostMapping("/buy")
     @ProductNotFoundApiDocumentation
     @ProductResponseApiDocumentation
+    @InsufficientStockApiDocumentation
     public ResponseEntity<StoreApiResponse<ProductResponseDto>> buyProduct(
             @Valid @RequestBody BuyProductRequestDto request
     ) {
