@@ -89,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProductResponseDto buyProduct(BuyProductRequestDto request) {
         long id = request.id();
@@ -105,13 +106,11 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product not found with id=[%d] after buy action", id)
-                ));
+        return productRepository.findById(id).get();
     }
 
     @Override
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProductResponseDto changePrice(long id, BigDecimal newPrice) {
         boolean updated = productRepository.changePrice(id, newPrice);
@@ -122,10 +121,7 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product not found with id=[%d] after price update", id)
-                ));
+        return productRepository.findById(id).get();
     }
 
     @Override
