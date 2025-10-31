@@ -101,9 +101,9 @@
               "raw": "{ \"name\": \"Product1\", \"price\": 499.99, \"stock\": 10 }"
             },
             "url": {
-              "raw": "{{base_url_admin}}/createProduct",
+              "raw": "{{base_url_admin}}/products/createProduct",
               "host": ["{{base_url_admin}}"],
-              "path": ["createProduct"]
+              "path": ["products","createProduct"]
             }
           }
         },
@@ -119,9 +119,9 @@
               "raw": "{ \"id\": 1, \"price\": 499.99 }"
             },
             "url": {
-              "raw": "{{base_url_admin}}/change-price",
+              "raw": "{{base_url_admin}}/products/change-price",
               "host": ["{{base_url_admin}}"],
-              "path": ["change-price"]
+              "path": ["products","change-price"]
             }
           }
         },
@@ -131,9 +131,9 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url_admin}}/1",
+              "raw": "{{base_url_admin}}/products/1",
               "host": ["{{base_url_admin}}"],
-              "path": ["1"]
+              "path": ["products","1"]
             }
           }
         }

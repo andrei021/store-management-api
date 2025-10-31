@@ -30,7 +30,7 @@ import static io.github.andrei021.store.controller.ApiVersion.API_V1;
 import static io.github.andrei021.store.controller.ControllerUtil.SUCCESS;
 
 @RestController
-@RequestMapping(API_V1 + "/admin")
+@RequestMapping(API_V1 + "/admin/products")
 @Validated
 @PreAuthorize("hasAnyRole('ADMIN')")
 public class ProductAdminController {
@@ -42,7 +42,7 @@ public class ProductAdminController {
     }
 
     /**
-     * POST /api/v1/admin/createProduct
+     * POST /api/v1/admin/products/createProduct
      * Creates a new product
      */
     @PostMapping("/createProduct")
@@ -56,7 +56,7 @@ public class ProductAdminController {
     }
 
     /**
-     * PUT /api/v1/admin/change-price
+     * PUT /api/v1/admin/products/change-price
      * Change the price of a product by ID
      */
     @PutMapping("/change-price")
@@ -70,7 +70,7 @@ public class ProductAdminController {
     }
 
     /**
-     * DELETE /api/v1/admin/{id}
+     * DELETE /api/v1/admin/products/{id}
      * Delete a product by ID. Returns 404 if product not found
      */
     @DeleteMapping("/{id}")

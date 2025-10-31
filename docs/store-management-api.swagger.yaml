@@ -9,7 +9,7 @@ servers:
 security:
   - basicAuth: []
 paths:
-  /api/v1/admin/change-price:
+  /api/v1/admin/products/change-price:
     put:
       tags:
         - product-admin-controller
@@ -118,7 +118,7 @@ paths:
                       path: /api/v1/products/buy
                     statusMessage: FAILED_REQUEST
                     timestamp: '2025-10-30T12:00:00Z'
-  /api/v1/admin/createProduct:
+  /api/v1/admin/products/createProduct:
     post:
       tags:
         - product-admin-controller
@@ -321,7 +321,7 @@ paths:
                       path: /api/v1/products/{id}
                     statusMessage: FAILED_REQUEST
                     timestamp: '2025-10-30T12:00:00Z'
-  /api/v1/admin/{id}:
+  /api/v1/admin/products/{id}:
     delete:
       tags:
         - product-admin-controller
